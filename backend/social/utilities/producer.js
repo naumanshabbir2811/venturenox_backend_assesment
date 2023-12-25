@@ -47,7 +47,7 @@ const initProducer = async () => {
 						value: JSON.stringify({
 							event_name: 'tenant_created',
 							properties: {
-								id: id,
+								tenant_id: id,
 								name: faker.company.companyName(),
 								address: faker.address.streetAddress(),
 								city: faker.address.city(),
@@ -55,7 +55,8 @@ const initProducer = async () => {
 								country: faker.address.country(),
 								zip_code: faker.address.zipCode(),
 								phone: faker.phone.phoneNumber(),
-								web_url: faker.internet.domainName()
+								web_url: faker.internet.domainName(),
+								is_active:true
 							}
 						}),
 					}
@@ -88,6 +89,7 @@ const initProducer = async () => {
 								bio: faker.lorem.sentence(),
 								social_links: {facebook: 'https://facebook.com/'},
 								employee_id: faker.datatype.number(),
+								is_active:true
 							}
 						}),
 					}

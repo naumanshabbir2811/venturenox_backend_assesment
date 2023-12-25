@@ -5,13 +5,21 @@ const { initProducer } = require('./utilities/producer');
 // const { connectProducer, connectAdmin } = require('./utilities/producer');
 // const KeyMaster = require('./utilities/KeyMaster');
 // const databaseConfig = require('./database/DatabaseConfig');
-
+const sequelizeConfig = require('./config/database');
+const userRoutes = require('./routes/userRoutes');
+const tanentRoutes= require('./routes/tenantRoutes')
+const sequelize =  sequelizeConfig
 const app = express();
-
+sequelize.sync().then(() => {
+	console.log('Database synced');
+  }).catch((err) => {
+	console.error('Error syncing database:', err);
+  });
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use('/api/users', userRoutes);
+app.use('/api/tanents',tanentRoutes)
 
-// app.use(databaseConfig.initializeDB());
 
 app.use('/', async (req, res) => {
 
