@@ -1,35 +1,52 @@
 const express = require('express');
-// const { initConsumer } = require('./utilities/consumer');
-const { initProducer } = require('./utilities/producer');
-// const { connectConsumer } = require('./utilities/consumer');
-// const { connectProducer, connectAdmin } = require('./utilities/producer');
-// const KeyMaster = require('./utilities/KeyMaster');
-// const databaseConfig = require('./database/DatabaseConfig');
-const sequelizeConfig = require('./config/database');
+const sequelize = require('./config/database');
 const userRoutes = require('./routes/userRoutes');
-const tanentRoutes= require('./routes/tenantRoutes')
-const sequelize =  sequelizeConfig
+const tenantRoutes = require('./routes/tenantRoutes');
+const errorHandler = require('./middlewares/errorHandler');
+const { initProducer } = require('./utilities/producer');
+const HttpException = require('./utilities/HttpException.utils');
+
 const app = express();
-sequelize.sync().then(() => {
-	console.log('Database synced');
-  }).catch((err) => {
-	console.error('Error syncing database:', err);
-  });
+const router = express.Router();
+
+// Middleware
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.use('/api/users', userRoutes);
-app.use('/api/tanents',tanentRoutes)
 
+// Routes with '/api' prefix
+app.use('/api', router);
 
+// Sub-routes with common prefix '/users'
+router.use('/users', userRoutes);
+
+// Sub-routes with common prefix '/tenants'
+router.use('/tenants', tenantRoutes);
+
+// Error Handling
+app.all('*', (req, res, next) => {
+  const err = new HttpException(404, 'Endpoint Not Found');
+  next(err);
+});
+app.use(errorHandler);
+
+// Default Route
 app.use('/', async (req, res) => {
-
-	res.status(200).json({ message: `App is running on port. ${process.env.PORT || 4000}` });
-
+  res.status(200).json({ message: `App is running on port ${process.env.PORT || 4000}` });
 });
 
-app.listen(process.env.PORT || 4000, async () => {
-	
-	console.log('App started at port', process.env.PORT || 4000);
-	await initProducer();
+// Database Synchronization
+sequelize
+  .sync()
+  .then(() => {
+    console.log('Database synced');
+  })
+  .catch((err) => {
+    console.error('Error syncing database:', err);
+  });
 
+// Start Server
+const PORT = process.env.PORT || 4000;
+app.listen(PORT, async () => {
+  console.log(`App started at port ${PORT}`);
+  await initProducer();
 });
