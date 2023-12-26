@@ -31,17 +31,21 @@ Follow these steps to set up and run the project locally.
     docker-compose up -d
     ```
 
-4. Install Node.js dependencies:
+4. **Important Note:** An initial SQL script is included in the Docker setup, which will automatically create the necessary table schema for you.
+
+5. Install Node.js dependencies:
 
     ```bash
     npm install
     ```
 
-5. Run Sequelize migrations to set up the database:
+6. Run Sequelize migrations to set up the database If the schema does not craeted using the intial script:
 
     ```bash
     npx sequelize-cli db:migrate
     ```
+
+
 
 ### Running the Application
 
